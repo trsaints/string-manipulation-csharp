@@ -1,39 +1,41 @@
-﻿Console.Write("Insert the contents of your HTML: ");
-string? message = Console.ReadLine();
+﻿const string HTMLInput = "<div><h2>Widgets &trade;</h2><span>5000</span></div>";
 
-Console.Write("Insert the HTML tag name: ");
-string tagName = Console.ReadLine();
+string HTMLInputChild = GetChildHTMLContent(HTMLInput, "div");
+int quantity = GetQuantityFromHTML(HTMLInputChild, "span");
+string output = $"Output: {HTMLInputChild}";
 
-while (tagName.Length == 0)
+// Your work here
+
+Console.WriteLine($"Quantity: {quantity}");
+Console.WriteLine(output);
+
+string GetChildHTMLContent(string HTML, string parentTagName)
 {
-    Console.Write("Null entries are not allowed. Insert the HTML tag name: ");
-    tagName = Console.ReadLine();
+    string openingTag = $"<{parentTagName}>",
+        closingTag = $"</{parentTagName}>";
+
+    int openingPosition = HTML.IndexOf(openingTag),
+        closingPosition = HTML.IndexOf(closingTag),
+        openingTagLength = openingPosition + openingTag.Length,
+        childLength = closingPosition - openingTagLength;
+
+    return HTML.Substring(openingTagLength, childLength);
 }
 
-string generatedTag = GenerateHTMLTagWithContent(message, tagName);
-
-ExtractHTMLContent(tagName, generatedTag);
-
-string GenerateHTMLTagWithContent(string? content, string tagName)
+int GetQuantityFromHTML(string HTML, string quantityTagName)
 {
-    string tag = $"<{tagName}>{content}</{tagName}>";
-    Console.WriteLine($"Generated HTML: {tag}");
+    string openingTag = $"<{quantityTagName}>",
+        closingTag = $"</{quantityTagName}>";
 
-    return tag;
-}
+    int openingPosition = HTML.IndexOf(openingTag),
+        closingPosition = HTML.IndexOf(closingTag),
+        openingTagLength = openingPosition + openingTag.Length,
+        childLength = closingPosition - openingTagLength;
 
-string ExtractHTMLContent(string tagName, string HTMLTag)
-{
-    string startTag = $"<{tagName}>",
-        endTag = $"</{tagName}>";
+    string content = HTML.Substring(openingTagLength, childLength);
 
-    int startTagIndex = HTMLTag.IndexOf(startTag),
-        endTagIndex = HTMLTag.IndexOf(endTag),
-        contentLength = endTagIndex - (startTagIndex + startTag.Length);
-
-    string content = HTMLTag.Substring((startTagIndex + startTag.Length), contentLength);
-
-    Console.WriteLine($"Content length: {contentLength}\nExtracted content: {content}");
-
-    return content;
+    if (int.TryParse(content, out _))
+        return int.Parse(content);
+    else
+        return -1;
 }
